@@ -37,7 +37,7 @@ Fusion Boilerplate has all installation dependencies built-in, including its SDK
 the Github repository.
 
 ```shell
-git clone https://github.com/nova-network-inc/fusion-boilerplate && cd fusion-boilerplate
+git clone https://github.com/nova-network-inc/fusion-boilerplate ; cd fusion-boilerplate
 ```
 
 Once you've finished cloning, install all dependencies with `yarn` using the command
