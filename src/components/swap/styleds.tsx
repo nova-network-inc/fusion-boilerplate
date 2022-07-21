@@ -49,7 +49,7 @@ export const StyledBalanceMaxMini = styled.button`
   width: 22px;
   background-color: ${({ theme }) => theme.bg2};
   border: none;
-  border-radius: 50%;
+  border-radius: 10px;
   padding: 0.2rem;
   font-size: 0.875rem;
   font-weight: 400;

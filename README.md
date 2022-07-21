@@ -1,9 +1,9 @@
 # Fusion Boilerplate
 
 Fusion Boilerplate is an open-source interface for Fusion. In its current state
-it is compatible with Nova Network, Nebula Testnet, and Fantom Opera, and can be
-used by anyone to create their own DEX based on Fusion, without having to worry
-about deploying contracts and setting up all the complex structure behind an AMM.
+it is only compatible with Nova Network and can be used by anyone to create their
+own DEX based on Fusion, without having to worry about deploying contracts and
+setting up all the complex structure behind an AMM.
 
 It uses Fusion SDK (https://github.com/nova-network-inc/fusion-sdk) to connect to
 Fusion Public Contracts (https://github.com/nova-network-inc/fusion-public-contracts)
@@ -17,8 +17,9 @@ their very own DEXEs, and it can be fully customised to accommodate your own bra
 without the need for crediting Nova Network Inc.
 
 ### Can I add other networks?
-You can, but for that you will have to customise the Fusion SDK, deploy new contracts
-on the new networks you want to add, and change a big chunk of the original code.
+You can, but for that you will likely have to customise the Fusion SDK, deploy
+new contracts on the new networks you want to add, and change a big chunk of the
+original code.
 
 ### Can I add my own token list?
 Yes. Simply edit the token list under `src/constants/tokens/tokens.json` to create
