@@ -277,12 +277,12 @@ export default function Header() {
             {t('Liquidity')}
           </StyledNavLink>
 
-          <StyledExternalLink id={`stake-nav-link`} href={'https://github.com/nova-network-inc/fusion-boilerplate'}>
-          {t('Github')}
+          <StyledExternalLink id={`stake-nav-link`} href={'https://defillama.com/protocol/fusion-dex'}>
+          {t('Analytics')}
           </StyledExternalLink>
 
           <StyledExternalLink id={`stake-nav-link`} href={'https://novanetwork.io/'}>
-          {t('Nova Network')}
+          {t('Information')}
           </StyledExternalLink>
 
         </HeaderLinks>

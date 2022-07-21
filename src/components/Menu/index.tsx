@@ -85,7 +85,7 @@ const MenuItem = styled(ExternalLink)`
   }
 `
 
-const CODE_LINK = 'https://github.com/nova-network-inc'
+const CODE_LINK = 'https://github.com/nova-network-inc/fusion-boilerplate'
 
 export default function Menu() {
 
