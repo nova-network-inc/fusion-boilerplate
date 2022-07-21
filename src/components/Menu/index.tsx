@@ -94,7 +94,7 @@ export default function Menu() {
   const open = useModalOpen(ApplicationModal.MENU)
   const toggle = useToggleModal(ApplicationModal.MENU)
   useOnClickOutside(node, open ? toggle : undefined)
-  
+
 
   return (
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30451
@@ -117,7 +117,7 @@ export default function Menu() {
             <Code size={14} />
             Github
           </MenuItem>
-          <MenuItem id="link" href="https://discord.gg/nova-network">
+          <MenuItem id="link" href="https://discord.gg/novanetwork">
             <MessageCircle size={14} />
             Discord
           </MenuItem>
