@@ -21,4 +21,5 @@ ECHO Installation successful!
 ECHO ---------------------------------------------------------------------------
 ECHO.
 PAUSE
+CLS
 EXIT
