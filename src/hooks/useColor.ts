@@ -5,7 +5,7 @@ import { hex } from 'wcag-contrast'
 import { Token } from '@uniswap/sdk'
 
 async function getColorFromToken(token: Token): Promise<string | null> {
-  const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${token.address}/logo.png`
+  const path = `https://raw.githubusercontent.com/nova-network-inc/common-assets/main/token-info/${token.address}/logo.png`
 
   return Vibrant.from(path)
     .getPalette()
