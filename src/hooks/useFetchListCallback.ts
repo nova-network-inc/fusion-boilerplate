@@ -9,7 +9,7 @@ import { fetchTokenList } from '../state/lists/actions'
 import getTokenList from '../utils/getTokenList'
 import resolveENSContentHash from '../utils/resolveENSContentHash'
 import { useActiveWeb3React } from './index'
-// import tokens from '../constants/tokens/tokens.json' // Use only if importing local tokens list.
+// import tokens from '../constants/tokens/tokens.json'
 
 export function useFetchListCallback(): (listUrl: string) => Promise<TokenList> {
   const { chainId, library } = useActiveWeb3React()
@@ -26,7 +26,8 @@ export function useFetchListCallback(): (listUrl: string) => Promise<TokenList> 
         }
         throw new Error('Could not construct mainnet ENS resolver')
       }
-      return resolveENSContentHash(ensName, library)
+      // return resolveENSContentHash(ensName, library)
+      return new Promise<string>(resolve => resolve(''))
     },
     [chainId, library]
   )
@@ -35,15 +36,10 @@ export function useFetchListCallback(): (listUrl: string) => Promise<TokenList> 
     async (listUrl: string) => {
       const requestId = nanoid()
       dispatch(fetchTokenList.pending({ requestId, url: listUrl }))
-
-// This commented section will allow for fetching a local tokens list instead of using
-// the standard Github repository.
-
-//      if (tokens) {
-//        dispatch(fetchTokenList.fulfilled({ url: listUrl, tokenList: tokens, requestId }))
-//        return tokens
-//      }
-
+      // if (tokens) {
+      //   dispatch(fetchTokenList.fulfilled({ url: listUrl, tokenList: tokens, requestId }))
+      //   return tokens
+      // }
       return getTokenList(listUrl, ensResolver)
         .then(tokenList => {
           dispatch(fetchTokenList.fulfilled({ url: listUrl, tokenList, requestId }))

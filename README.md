@@ -9,6 +9,16 @@ It uses Fusion SDK (https://github.com/nova-network-inc/fusion-sdk) to connect t
 Fusion Public Contracts (https://github.com/nova-network-inc/fusion-public-contracts)
 for allowing the interface to process token swaps and managing liquidity pools.
 
+## Version 1.1.0 Update Notes
+- Added support for a fully automated installation, running, and building via batch
+scripts for Windows. You can access the script by executing `Application.cmd` inside
+the main repository folder.
+- Fixed bug with the swap hooks where it didn't fetch balances properly.
+- Added version file.
+- Fixed repository's `.gitignore`, which was letting unnecessary files to be uploaded.
+- Removed SDK installation script - it's all done by `Application.cmd` now.
+- Updated Readme FAQ and instructions to match new version.
+
 ## F.A.Q
 
 ### Is the code open-source? Can I change it and add my own logo, etc?
@@ -22,10 +32,13 @@ new contracts on the new networks you want to add, and change a big chunk of the
 original code.
 
 ### Can I add my own token list?
-Yes. Simply edit the token list under `src/constants/tokens/tokens.json` to create
-your own whitelisted tokens list. Please remember that for tokens to be tradeable,
-they need to have enough available liquidity, which can be pooled using this boilerplate,
-or Fusion at https://fusion.novanetwork.io/.
+Yes. The token list is defined at `/src/constants/lists.ts` and can be changed.
+You can either upload, host, and use your own list `json` file, or submit a pull
+request with your list at our [common-assets repository](https://github.com/nova-network-inc/common-assets/tree/main/token-lists)
+and adjust the URL accordingly. As an alternative option, you can also modify
+the `/src/hooks/useFetchListCallback.ts` file to fetch a local list instead. We have
+left the snippets of code to use commented, and all you need to do is to uncomment
+lines `12` and `39-42` for it to fetch the tokens list from `/src/constants/tokens/tokens.json`.
 
 ### Where can I find help?
 Preferably via Discord. We have a dedicated developers' channel in there, where you
@@ -33,27 +46,54 @@ can share your questions and get advice from the community on how to tackle any
 issues you might be facing while setting up this boilerplate.
 
 ## Installing
-Fusion Boilerplate has all installation dependencies built-in, including its SDK. First, clone
-the Github repository.
+Fusion Boilerplate has all installation dependencies built-in, including its SDK,
+and a fully automated script - for Windows only - that will help you managing
+your repository, including building and deploying your application.
+
+First, clone the Github repository.
 
 ```shell
 git clone https://github.com/nova-network-inc/fusion-boilerplate ; cd fusion-boilerplate
 ```
 
-Once you've finished cloning, install all dependencies with `yarn` using the command
-below. You can also install it with `npm` but we do recommend using `yarn`.
+### For Windows Users
+
+Once you've finished cloning, run:
+
+```shell
+.\Application
+```
+
+Then run the following scripts, in order:
+
+```shell
+1. Install/Update Modules and Dependencies
+4. Install/Reinstall Fusion SDK
+5. Set Environment Variables
+```
+
+Once you have executed all three scripts, you just need to start the app.
+
+```shell
+2. Start Development Application
+```
+
+You can always double-click `Application.cmd` inside the main folder to start
+the application script on your terminal.
+
+### For MacOS and Linux Users
+
+If you're using a **Mac** or **Linux**, after cloning run:
 
 ```shell
 yarn install
 ```
 
 After installing all dependencies, install the SDK and the extra dependencies
-required. Note that the command below will only work on Windows environments. If
-you are using Linux or Mac OS, manually copy the `@uniswap` directory to your
-`node_modules` directory, replacing any existing files.
+required using the command below.
 
 ```shell
-.\installFusionSDKWin32
+rm -rf node_modules/@uniswap && cp -r @fusionSDK @uniswap && cp -r @uniswap node_modules/
 ```
 
 Now all you need to do is to start the protocol using `yarn`.

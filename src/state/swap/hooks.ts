@@ -1,11 +1,11 @@
 import useENS from '../../hooks/useENS'
 import { Version } from '../../hooks/useToggledVersion'
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from '@uniswap/sdk'
+import { ChainId, Currency, CurrencyAmount, JSBI, Token, TokenAmount, Trade } from '@uniswap/sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useV1Trade } from '../../data/V1'
+// import { useV1Trade } from '../../data/V1'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { useTradeExactIn, useTradeExactOut } from '../../hooks/Trades'
@@ -18,6 +18,8 @@ import { SwapState } from './reducer'
 import useToggledVersion from '../../hooks/useToggledVersion'
 import { useUserSlippageTolerance } from '../user/hooks'
 import { computeSlippageAdjustedAmounts } from '../../utils/prices'
+import useETHER from '../../hooks/useETHER'
+import { FSNT, NUSD, WNBX } from '../../constants'
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>(state => state.swap)
@@ -30,16 +32,18 @@ export function useSwapActionHandlers(): {
   onChangeRecipient: (recipient: string | null) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
+  const { ETHER } = useETHER()
+  const { chainId } = useActiveWeb3React()
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
         selectCurrency({
           field,
-          currencyId: currency instanceof Token ? currency.address : currency === ETHER ? 'ETH' : ''
+          currencyId: currency instanceof Token ? currency.address : currency === ETHER ? ETHER.symbol ?? 'SNT' : ''
         })
       )
     },
-    [dispatch]
+    [ETHER, dispatch]
   )
 
   const onSwitchTokens = useCallback(() => {
@@ -60,6 +64,32 @@ export function useSwapActionHandlers(): {
     [dispatch]
   )
 
+  useEffect(() => {
+
+    if (chainId === ChainId.FANTOM) {
+      dispatch(
+        selectCurrency({
+          field: Field.OUTPUT,
+          currencyId: FSNT.address
+        })
+      )
+    } else if (chainId === ChainId.NOVA) {
+      dispatch(
+        selectCurrency({
+          field: Field.OUTPUT,
+          currencyId: NUSD.address
+        })
+      )
+    } else if (chainId === ChainId.NEBULA) {
+      dispatch(
+        selectCurrency({
+          field: Field.OUTPUT,
+          currencyId: WNBX.address
+        })
+      )
+    }
+  }, [ETHER, chainId, dispatch])
+
   return {
     onSwitchTokens,
     onCurrencySelection,
@@ -69,7 +99,7 @@ export function useSwapActionHandlers(): {
 }
 
 // try to parse a user entered amount for a given token
-export function tryParseAmount(value?: string, currency?: Currency): CurrencyAmount | undefined {
+export function tryParseAmount(value?: string, currency?: Currency, chainId?: ChainId): CurrencyAmount | undefined {
   if (!value || !currency) {
     return undefined
   }
@@ -78,6 +108,10 @@ export function tryParseAmount(value?: string, currency?: Currency): CurrencyAmo
     if (typedValueParsed !== '0') {
       return currency instanceof Token
         ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))
+        : chainId === ChainId.FANTOM
+        ? CurrencyAmount.fantom(JSBI.BigInt(typedValueParsed))
+        : chainId === ChainId.NEBULA
+        ? CurrencyAmount.nebula(JSBI.BigInt(typedValueParsed))
         : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed))
     }
   } catch (error) {
@@ -89,9 +123,9 @@ export function tryParseAmount(value?: string, currency?: Currency): CurrencyAmo
 }
 
 const BAD_RECIPIENT_ADDRESSES: string[] = [
-  '0x9550b0c83AD5a58898cD4267987Af67e7E52bF55', // v2 factory
-  '0x9550b0c83AD5a58898cD4267987Af67e7E52bF55', // v2 router 01
-  '0x9550b0c83AD5a58898cD4267987Af67e7E52bF55' // v2 router 02
+  '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', // v2 factory
+  '0xf164fC0Ec4E93095b804a4795bBe1e041497b92a', // v2 router 01
+  '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D' // v2 router 02
 ]
 
 /**
@@ -114,8 +148,9 @@ export function useDerivedSwapInfo(): {
   v2Trade: Trade | undefined
   inputError?: string
   v1Trade: Trade | undefined
+  aggregatorTrade: any
 } {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   const toggledVersion = useToggledVersion()
 
@@ -138,7 +173,7 @@ export function useDerivedSwapInfo(): {
   ])
 
   const isExactIn: boolean = independentField === Field.INPUT
-  const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
+  const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined, chainId)
 
   const bestTradeExactIn = useTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
   const bestTradeExactOut = useTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
@@ -156,7 +191,8 @@ export function useDerivedSwapInfo(): {
   }
 
   // get link to trade on v1, if a better rate exists
-  const v1Trade = useV1Trade(isExactIn, currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmount)
+  // const v1Trade = useV1Trade(isExactIn, currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmount)
+  const v1Trade = undefined
 
   let inputError: string | undefined
   if (!account) {
@@ -164,7 +200,7 @@ export function useDerivedSwapInfo(): {
   }
 
   if (!parsedAmount) {
-    inputError = inputError ?? 'Enter an amount'
+    inputError = inputError ?? 'Enter Amount'
   }
 
   if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
@@ -186,7 +222,8 @@ export function useDerivedSwapInfo(): {
 
   const [allowedSlippage] = useUserSlippageTolerance()
 
-  const slippageAdjustedAmounts = v2Trade && allowedSlippage && computeSlippageAdjustedAmounts(v2Trade, allowedSlippage)
+  const slippageAdjustedAmounts =
+    v2Trade && allowedSlippage && computeSlippageAdjustedAmounts(v2Trade, allowedSlippage)
 
   const slippageAdjustedAmountsV1 =
     v1Trade && allowedSlippage && computeSlippageAdjustedAmounts(v1Trade, allowedSlippage)
@@ -213,7 +250,8 @@ export function useDerivedSwapInfo(): {
     parsedAmount,
     v2Trade: v2Trade ?? undefined,
     inputError,
-    v1Trade
+    v1Trade,
+    aggregatorTrade: undefined
   }
 }
 
