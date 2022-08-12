@@ -11,12 +11,12 @@ for allowing the interface to process token swaps and managing liquidity pools.
 
 ## Version 1.1.0 Update Notes
 - Added support for a fully automated installation, running, and building via batch
-scripts for Windows. You can access the script by executing `Application.cmd` inside
+scripts for Windows. You can access the script by executing `.\Application` inside
 the main repository folder.
 - Fixed bug with the swap hooks where it didn't fetch balances properly.
 - Added version file.
 - Fixed repository's `.gitignore`, which was letting unnecessary files to be uploaded.
-- Removed SDK installation script - it's all done by `Application.cmd` now.
+- Removed SDK installation script - it's all done by the `Application` script now.
 - Updated Readme FAQ and instructions to match new version.
 
 ## F.A.Q
@@ -53,12 +53,18 @@ your repository, including building and deploying your application.
 First, clone the Github repository.
 
 ```shell
-git clone https://github.com/nova-network-inc/fusion-boilerplate ; cd fusion-boilerplate
+git clone https://github.com/nova-network-inc/fusion-boilerplate
+```
+
+Now navigate into the repository you've just cloned.
+
+```shell
+cd fusion-boilerplate
 ```
 
 ### For Windows Users
 
-Once you've finished cloning, run:
+Once inside the cloned directory, run:
 
 ```shell
 .\Application
@@ -94,6 +100,14 @@ required using the command below.
 
 ```shell
 rm -rf node_modules/@uniswap && cp -r @fusionSDK @uniswap && cp -r @uniswap node_modules/
+```
+
+Now you have got everything installed, you need to set the default environment variables
+for the application. We have left an off-the-shelf option for you to use inside the
+repository, with the default values for Nova Network native compatibility.
+
+```shell
+mv .env.example .env
 ```
 
 Now all you need to do is to start the protocol using `yarn`.
